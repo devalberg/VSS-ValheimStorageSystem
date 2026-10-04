@@ -1,0 +1,11 @@
+bin/
+obj/
+dist/
+tools/
+backups/
+tests/runtime/
+.vs/
+assets/assets
+assets/assets.manifest
+assets/vss-panel.png
+assets/vss-panel-v2-prompt.txt

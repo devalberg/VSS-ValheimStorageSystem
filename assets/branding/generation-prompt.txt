@@ -1,0 +1,13 @@
+Use case: ads-marketing
+Asset type: square 1:1 mod thumbnail for VSS — Valheim Storage System, also readable as a 256x256 Thunderstore icon.
+Primary request: polished Viking fantasy game mod cover art inspired by Valheim's rustic Norse aesthetic.
+Scene/backdrop: dark cozy timber Viking storage hall, two sturdy iron-banded wooden storage chests framing the central subject, subtle teal atmospheric light behind them.
+Subject: an open parchment book and a tall white feather quill in an ink pot on a chunky carved wooden pedestal. A restrained warm golden magical glow rises from the book, suggesting a unified storage system.
+Style/medium: detailed painterly game key art with tactile wood, aged bronze, parchment and forged iron; strong shapes and convincing dimensional lighting.
+Composition/framing: EXACT square 1:1 composition. Large dominant book-and-quill pedestal in the center and lower half. Small symmetrical chest silhouettes on either side. Thin complete aged bronze Norse knotwork border with all four corners inside the canvas. Reserve upper quarter for title.
+Text (verbatim): "VSS" in large clear gold Norse-inspired display capitals across the top; below, "VALHEIM STORAGE SYSTEM" in smaller legible warm ivory capitals. No other text.
+Lighting/mood: warm amber glow on central book and pedestal, cool teal shadows, welcoming Viking workshop.
+Constraints: maximize title readability at small thumbnail sizes; uncluttered composition; all artwork within the square; no game screenshot, no UI panels, no modern machinery, no Minecraft blocks, no characters, no watermark. This is unofficial mod art, do not add official Valheim or Minecraft logos.
+Output: a square PNG image with opaque background.
+
+Generated with the built-in image_gen tool on 2026-10-04. thumbnail.png is the original square master; icon.png is its 256x256 packaging derivative.

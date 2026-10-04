@@ -1,0 +1,74 @@
+if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "ValheimBundle") throw new System.Exception("Expected ValheimBundle scene.");
+var source = GameObject.Find("VSS_StorageInventory_001");
+if(source == null) throw new System.Exception("Storage model is missing.");
+const string folder = "Assets/VSSExport";
+if(!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder("Assets", "VSSExport");
+var temp = UnityEngine.Object.Instantiate(source);
+temp.name = "vss_access_stand";
+if(PrefabUtility.IsPartOfPrefabInstance(temp)) PrefabUtility.UnpackPrefabInstance(temp, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+try {
+ temp.transform.position = Vector3.zero; temp.transform.rotation = Quaternion.identity; temp.transform.localScale = Vector3.one;
+ var rendererArray = temp.GetComponentsInChildren<Renderer>(true);
+ var bounds = rendererArray[0].bounds; foreach(var r in rendererArray) bounds.Encapsulate(r.bounds);
+ var scale = 1.25f / bounds.size.y;
+ var wrapper = new GameObject("vss_access_stand");
+ temp.name = "VSS_StorageInventory_001";
+ temp.transform.SetParent(wrapper.transform, true);
+ temp.transform.localScale = Vector3.one * scale;
+ temp.transform.localPosition = new Vector3(-bounds.center.x, -bounds.min.y, -bounds.center.z) * scale;
+ var materials = new System.Collections.Generic.Dictionary<Material, Material>();
+ int index = 0;
+ foreach(var renderer in rendererArray) {
+  var mapped = new Material[renderer.sharedMaterials.Length];
+  for(int n=0;n<mapped.Length;n++) {
+   var old = renderer.sharedMaterials[n];
+   Material converted;
+   if(!materials.TryGetValue(old, out converted)) {
+    var shader = Shader.Find("Standard");
+    if(shader == null) throw new System.Exception("Built-in Standard shader is missing.");
+    converted = new Material(shader); converted.name = "VSS_StorageInventory_Material_" + index;
+    string prefix = folder + "/material_" + index;
+    foreach(var sourceProperty in new[]{"baseColorTexture", "normalTexture"}) {
+     if(!old.HasProperty(sourceProperty) || old.GetTexture(sourceProperty) == null) continue;
+     var texture = old.GetTexture(sourceProperty);
+     var rt = RenderTexture.GetTemporary(texture.width, texture.height, 0, RenderTextureFormat.ARGB32, sourceProperty == "baseColorTexture" ? RenderTextureReadWrite.sRGB : RenderTextureReadWrite.Linear);
+     var previous = RenderTexture.active;
+     Texture2D readable = null;
+     try {
+      Graphics.Blit(texture, rt); RenderTexture.active = rt;
+      readable = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, sourceProperty != "baseColorTexture");
+      readable.ReadPixels(new Rect(0,0,texture.width,texture.height),0,0); readable.Apply();
+      string texturePath = prefix + "_" + sourceProperty + ".png";
+      System.IO.File.WriteAllBytes(texturePath, ImageConversion.EncodeToPNG(readable));
+      AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceSynchronousImport);
+      var importer = (TextureImporter)AssetImporter.GetAtPath(texturePath);
+      importer.textureType = sourceProperty == "normalTexture" ? TextureImporterType.NormalMap : TextureImporterType.Default;
+      importer.sRGBTexture = sourceProperty == "baseColorTexture";
+      importer.maxTextureSize = 2048; importer.SaveAndReimport();
+      converted.SetTexture(sourceProperty == "baseColorTexture" ? "_MainTex" : "_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath));
+      if(sourceProperty == "normalTexture") converted.EnableKeyword("_NORMALMAP");
+     } finally { RenderTexture.active = previous; RenderTexture.ReleaseTemporary(rt); if(readable != null) UnityEngine.Object.DestroyImmediate(readable); }
+    }
+    if(old.HasProperty("baseColorFactor")) converted.color = old.GetColor("baseColorFactor");
+    converted.SetFloat("_Metallic", old.HasProperty("metallicFactor") ? old.GetFloat("metallicFactor") : 0f);
+    converted.SetFloat("_Glossiness", old.HasProperty("roughnessFactor") ? 1f-old.GetFloat("roughnessFactor") : 0.25f);
+    AssetDatabase.CreateAsset(converted, prefix + ".mat"); materials.Add(old, converted); index++;
+   }
+   mapped[n] = converted;
+  }
+  renderer.sharedMaterials = mapped;
+ }
+ var filters = temp.GetComponentsInChildren<MeshFilter>(true);
+ for(int i=0;i<filters.Length;i++) {
+  var mesh = UnityEngine.Object.Instantiate(filters[i].sharedMesh); mesh.name = "VSS_StorageInventory_Mesh_" + i;
+  string meshPath = folder + "/mesh_" + i + ".asset"; AssetDatabase.CreateAsset(mesh, meshPath); filters[i].sharedMesh = mesh;
+ }
+ var prefab = PrefabUtility.SaveAsPrefabAsset(wrapper, folder + "/vss_access_stand.prefab");
+ UnityEngine.Object.DestroyImmediate(wrapper);
+ AssetDatabase.SaveAssets();
+ string output = @"C:\Program Files (x86)\Steam\steamapps\common\Valheim\VSS-ValheimStorageSystem\assets";
+ var build = new AssetBundleBuild {assetBundleName="vss_assets", assetNames=new[]{folder + "/vss_access_stand.prefab"}, addressableNames=new[]{"vss_access_stand"}};
+ var manifest = BuildPipeline.BuildAssetBundles(output,new[]{build}, BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.AssetBundleStripUnityVersion | BuildAssetBundleOptions.StrictMode, BuildTarget.StandaloneWindows64);
+ if(manifest == null || !System.IO.File.Exists(System.IO.Path.Combine(output,"vss_assets"))) throw new System.Exception("Asset bundle build failed.");
+ return new {prefab=AssetDatabase.GetAssetPath(prefab), bundle=System.IO.Path.Combine(output,"vss_assets"), source=source.name, sourceHeight=bounds.size.y, exportedHeight=1.25f, meshes=filters.Length, materials=index, editorVersion=Application.unityVersion};
+} finally { if(temp != null) UnityEngine.Object.DestroyImmediate(temp); }

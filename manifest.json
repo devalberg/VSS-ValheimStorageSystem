@@ -1,0 +1,9 @@
+{
+  "name": "VSS_ValheimStorageSystem",
+  "version_number": "0.2.4",
+  "website_url": "https://github.com/Georodin/VSS-ValheimStorageSystem",
+  "description": "Inspired by Refined Storage for Minecraft. Search, sort and transfer items across nearby Valheim chests with a book-and-quill pedestal, chest resource preferences and co-op support.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2351"
+  ]
+}

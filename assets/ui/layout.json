@@ -1,0 +1,135 @@
+{
+  "coordinateSystem": "1040 x 950 logical pixels, origin at top-left, uniformly scaled to fit viewport",
+  "layersBackToFront": [
+    "continuous oak backing",
+    "independent blank inset skins",
+    "complete transparent outer frame",
+    "interactive item grids and TMP controls",
+    "native MessageHud notification canvas"
+  ],
+  "outerFrame": {
+    "x": 0,
+    "y": 0,
+    "width": 1040,
+    "height": 950,
+    "cornerSafeArea": 72
+  },
+  "header": {
+    "x": 80,
+    "y": 30,
+    "width": 880,
+    "height": 70
+  },
+  "title": {
+    "x": 98,
+    "y": 36,
+    "width": 784,
+    "height": 34
+  },
+  "capacity": {
+    "x": 98,
+    "y": 70,
+    "width": 784,
+    "height": 22
+  },
+  "closeButton": {
+    "x": 902,
+    "y": 38,
+    "width": 52,
+    "height": 52,
+    "paintedInBackground": false
+  },
+  "toolbar": {
+    "x": 32,
+    "y": 102,
+    "width": 976,
+    "height": 56
+  },
+  "search": {
+    "x": 44,
+    "y": 110,
+    "width": 425,
+    "height": 40
+  },
+  "sort": {
+    "x": 481,
+    "y": 110,
+    "width": 158,
+    "height": 40
+  },
+  "sortDirection": {
+    "x": 650,
+    "y": 110,
+    "width": 55,
+    "height": 40
+  },
+  "filter": {
+    "x": 716,
+    "y": 110,
+    "width": 189,
+    "height": 40
+  },
+  "refresh": {
+    "x": 916,
+    "y": 110,
+    "width": 80,
+    "height": 40
+  },
+  "storageWell": {
+    "x": 32,
+    "y": 166,
+    "width": 976,
+    "height": 378
+  },
+  "storageViewport": {
+    "x": 44,
+    "y": 178,
+    "width": 952,
+    "height": 354,
+    "columns": 12
+  },
+  "inventoryHeading": {
+    "x": 203,
+    "y": 550,
+    "width": 350,
+    "height": 30
+  },
+  "weight": {
+    "x": 557,
+    "y": 553,
+    "width": 280,
+    "height": 26
+  },
+  "inventoryWell": {
+    "x": 191,
+    "y": 584,
+    "width": 658,
+    "height": 306
+  },
+  "inventoryViewport": {
+    "x": 203,
+    "y": 596,
+    "width": 634,
+    "height": 282,
+    "columns": 8,
+    "rows": 4
+  },
+  "footer": {
+    "x": 80,
+    "y": 894,
+    "width": 880,
+    "height": 26
+  },
+  "footerText": {
+    "x": 94,
+    "y": 897,
+    "width": 852,
+    "height": 20
+  },
+  "slot": {
+    "width": 72,
+    "height": 66,
+    "gapX": 6,
+    "gapY": 6
+  }
+}
