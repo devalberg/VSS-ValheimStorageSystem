@@ -18,7 +18,7 @@ Build a book-and-quill pedestal, press **E**, and search all your nearby chests 
 - **Native inventory behavior:** equipped-item highlights, hotbar numbers, right-click equip/unequip/use, and native notifications above the storage window.
 - **Co-op support:** synchronized chest access, permissions and host-controlled radius. Successful live multiplayer testing reported by the author.
 
-Wooden, reinforced and black metal chests, barrels, and accessible personal chests are supported. Chest privacy and ward permissions apply. Carts, ships, graves and temporary loot containers are excluded.
+Wooden, reinforced and black metal chests, barrels, and accessible personal chests are supported. Player-built containers from other mods (for example OdinsKingdom crates) are supported too. Chest privacy and ward permissions apply. Carts, ships, graves and temporary loot containers are excluded.
 
 ## Getting started
 
@@ -69,12 +69,16 @@ RegisterStand = true
 
 [Storage]
 RadiusMeters = 20
+ModdedContainers = true
+ExcludedContainers =
 
 [UI]
 RefreshSeconds = 0.75
 ```
 
 Set the radius on the host/server; clients use the host's value. Only loaded chests are scanned, so raising the radius does not force distant world sectors to load.
+
+`ModdedContainers` links player-built containers added by other mods. `ExcludedContainers` takes comma-separated prefab names that are never linked, such as `piece_chest_private`. Keep both settings the same on every player, because the chest owner checks them before granting a transfer.
 
 ## Multiplayer
 

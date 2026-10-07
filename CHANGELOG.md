@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Player-built containers from other mods (for example the OdinsKingdom Large Wood Crate) can be linked. Toggle with `ModdedContainers`.
+- `ExcludedContainers` lists container prefab names that are never linked.
+
 ## 0.2.4
 
 - First public release, inspired by the Refined Storage mod for Minecraft.

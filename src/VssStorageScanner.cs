@@ -6,6 +6,7 @@ namespace VSS;
 internal static class VssStorageScanner
 {
     internal static readonly HashSet<Container> Containers = new();
+    private static readonly Dictionary<string, bool> ModdedPieces = new(StringComparer.Ordinal);
     public static bool Supported(Container container)
     {
         if (container == null || container.m_wagon != null || container.m_autoDestroyEmpty) return false;
@@ -13,7 +14,17 @@ internal static class VssStorageScanner
         if (view == null || !view.IsValid()) return false;
         var prefab = ZNetScene.instance != null ? ZNetScene.instance.GetPrefab(view.GetZDO().GetPrefab()) : null;
         var name = prefab != null ? prefab.name : container.gameObject.name.Replace("(Clone)", "").Trim();
-        return name.StartsWith("piece_chest", StringComparison.Ordinal) || name == "piece_barrel";
+        if (VssPlugin.ModConfig.Excluded.Contains(name)) return false;
+        if (name.StartsWith("piece_chest", StringComparison.Ordinal) || name == "piece_barrel") return true;
+        return VssPlugin.ModConfig.ModdedContainers.Value && ModdedPiece(view, name);
+    }
+    // Modded storage (e.g. OdinsKingdom crates) uses its own prefab names; accept player-built pieces but not ships or graves.
+    private static bool ModdedPiece(ZNetView view, string name)
+    {
+        if (ModdedPieces.TryGetValue(name, out var supported)) return supported;
+        supported = view.GetComponent<Piece>() != null && view.GetComponent<Ship>() == null && view.GetComponent<TombStone>() == null;
+        ModdedPieces[name] = supported;
+        return supported;
     }
     public static bool CanAccess(Container container, Player player) => player != null && Supported(container) &&
         VssGame.CheckAccess(container, player.GetPlayerID()) &&
