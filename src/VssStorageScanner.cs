@@ -7,7 +7,10 @@ internal static class VssStorageScanner
 {
     internal static readonly HashSet<Container> Containers = new();
     private static readonly Dictionary<string, bool> ModdedPieces = new(StringComparer.Ordinal);
-    public static bool Supported(Container container)
+    private static readonly HashSet<string> LoggedModded = new(StringComparer.Ordinal);
+    public static bool Supported(Container container) => Supported(container, true);
+    // Player.PlacePiece sets the creator after Awake, so registration skips that check; access and transfers still apply it.
+    internal static bool Supported(Container container, bool requireCreator)
     {
         if (container == null || container.m_wagon != null || container.m_autoDestroyEmpty) return false;
         var view = VssGame.View(container);
@@ -16,13 +19,19 @@ internal static class VssStorageScanner
         var name = prefab != null ? prefab.name : container.gameObject.name.Replace("(Clone)", "").Trim();
         if (VssPlugin.ModConfig.Excluded.Contains(name)) return false;
         if (name.StartsWith("piece_chest", StringComparison.Ordinal) || name == "piece_barrel") return true;
-        return VssPlugin.ModConfig.ModdedContainers.Value && ModdedPiece(view, name);
+        if (!VssPlugin.ModConfig.ModdedContainers.Value || !ModdedPiece(container, view, name)) return false;
+        if (!requireCreator) return true;
+        if (view.GetZDO().GetLong(ZDOVars.s_creator, 0L) == 0L) return false;
+        if (LoggedModded.Add(name)) VssPlugin.Log.LogInfo($"Linking modded container {name}. Add it to ExcludedContainers to leave it out.");
+        return true;
     }
-    // Modded storage (e.g. OdinsKingdom crates) uses its own prefab names; accept player-built pieces but not ships or graves.
-    private static bool ModdedPiece(ZNetView view, string name)
+    // Modded storage (e.g. OdinsKingdom crates) uses its own prefab names. Accept standalone build pieces only:
+    // ship and cart storage sits on a child of the vehicle's root, and graves and the Obliterator (which destroys its contents) are excluded.
+    private static bool ModdedPiece(Container container, ZNetView view, string name)
     {
         if (ModdedPieces.TryGetValue(name, out var supported)) return supported;
-        supported = view.GetComponent<Piece>() != null && view.GetComponent<Ship>() == null && view.GetComponent<TombStone>() == null;
+        supported = view.gameObject == container.gameObject && view.GetComponent<Piece>() != null &&
+            view.GetComponent<Ship>() == null && view.GetComponent<TombStone>() == null && view.GetComponent<Incinerator>() == null;
         ModdedPieces[name] = supported;
         return supported;
     }
